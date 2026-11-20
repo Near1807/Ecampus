@@ -1,3 +1,16 @@
 spring:
   application:
     name: Ecampus-Backend
+
+  jpa :
+    hibernate:
+      ddl-auto: validate
+
+# Premier superadmin, créé au démarrage s'il n'en existe aucun (voir SuperAdminBootstrap).
+ecampus:
+  bootstrap:
+    superadmin:
+      mail: ${ECAMPUS_SUPERADMIN_MAIL:}
+      password: ${ECAMPUS_SUPERADMIN_PASSWORD:}
+      firstname: ${ECAMPUS_SUPERADMIN_FIRSTNAME:Super}
+      lastname: ${ECAMPUS_SUPERADMIN_LASTNAME:Admin}
