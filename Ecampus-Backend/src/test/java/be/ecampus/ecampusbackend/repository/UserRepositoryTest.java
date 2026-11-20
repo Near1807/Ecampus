@@ -12,8 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests of {@link UserRepository} against the real local PostgreSQL.
@@ -83,5 +82,14 @@ class UserRepositoryTest
         // from another rule than the unique index on lower(mail).
         assertTrue(errorMessage.contains("uq_users_mail_lower"),
                 "The refusal should come from uq_users_mail_lower");
+    }
+
+    @Test
+    void findsAUserIgnoringTheCaseOfTheMail() {
+        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        userRepository.saveAndFlush(user);
+        User found = userRepository.findByMailIgnoreCase("ADA@EXAMPLE.COM");
+        assertNotNull(found, "The user should be found");
+        assertEquals(user.getId(), found.getId());
     }
 }
