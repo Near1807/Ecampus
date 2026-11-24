@@ -34,9 +34,17 @@ public class MessageRepositoryTest {
     @Test
     void savesAndReadsBackAMessage() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
         UUID userId = userRepository.saveAndFlush(user).getId();
-        User admin = new User("Grace", "Hopper", "grace@example.com", "hash");
+        User admin = new User();
+        admin.setFirstname("Grace");
+        admin.setLastname("Hopper");
+        admin.setMail("grace@example.com");
+        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
         Conversation conversation = new Conversation(userId, adminId);
         UUID conversationId = conversationRepository.saveAndFlush(conversation).getId();
@@ -59,7 +67,11 @@ public class MessageRepositoryTest {
     @Test
     void rejectsAMessageWithAnUnknownConversation() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
         UUID userId = userRepository.saveAndFlush(user).getId();
         Message message = new Message(UUID.randomUUID(), userId, "Hello");
 
@@ -78,9 +90,17 @@ public class MessageRepositoryTest {
     @Test
     void rejectsAReadDateBeforeCreation() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
         UUID userId = userRepository.saveAndFlush(user).getId();
-        User admin = new User("Grace", "Hopper", "grace@example.com", "hash");
+        User admin = new User();
+        admin.setFirstname("Grace");
+        admin.setLastname("Hopper");
+        admin.setMail("grace@example.com");
+        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
         Conversation conversation = new Conversation(userId, adminId);
         UUID conversationId = conversationRepository.saveAndFlush(conversation).getId();

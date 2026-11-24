@@ -30,7 +30,11 @@ public class ConnexionRepositoryTest {
     @Test
     void savesAndReadsBackAConnexion() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
         UUID userId = userRepository.saveAndFlush(user).getId();
         Connexion connexion = new Connexion(userId, ConnexionStatus.REUSSIE);
 
