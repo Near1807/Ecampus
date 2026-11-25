@@ -1,11 +1,11 @@
-import { useState, type CSSProperties, type PointerEvent } from 'react'
+import { useMemo, useState, type CSSProperties, type PointerEvent } from 'react'
 import { BoardItem } from '../components/BoardItem'
 import { EmptySlot } from '../components/EmptySlot'
 import { MobileHeader } from '../components/layout/MobileHeader'
 import { MobileNav } from '../components/layout/MobileNav'
 import { MobilePanel } from '../components/layout/MobilePanel'
 import { ChevronLeftIcon, ChevronRightIcon } from '../components/ui/icons'
-import { MOBILE_PANELS } from '../config/slots'
+import { layoutMobile } from '../layout/board'
 import { CREAM, FRAUNCES } from '../theme/tokens'
 import type { Annonce } from '../types/annonce'
 
@@ -13,6 +13,8 @@ interface MobileBoardPageProps {
   annonces: Annonce[]
   accent: string
   tilt: boolean
+  /** 0 = disposition par défaut ; un autre entier donne une autre disposition. */
+  seed: number
 }
 
 const arrow = (side: 'left' | 'right'): CSSProperties => ({
@@ -33,8 +35,9 @@ const arrow = (side: 'left' | 'right'): CSSProperties => ({
 })
 
 /** Page mobile : carrousel de 5 panneaux (swipe + flèches) et navigation basse. */
-export function MobileBoardPage({ annonces, accent, tilt }: MobileBoardPageProps) {
-  const total = MOBILE_PANELS.length
+export function MobileBoardPage({ annonces, accent, tilt, seed }: MobileBoardPageProps) {
+  const panels = useMemo(() => layoutMobile(annonces, seed), [annonces, seed])
+  const total = Math.max(panels.length, 1)
   const [index, setIndex] = useState(0)
   const [startX, setStartX] = useState<number | null>(null)
   const go = (i: number) => setIndex((i + total) % total)
@@ -47,7 +50,7 @@ export function MobileBoardPage({ annonces, accent, tilt }: MobileBoardPageProps
     else if (dx > 45) go(index - 1)
   }
 
-  const byId = new Map(annonces.map((a) => [a.id, a]))
+  const byId = useMemo(() => new Map(annonces.map((a) => [a.id, a])), [annonces])
 
   return (
     <div style={{ width: '100%', maxWidth: 430, margin: '0 auto', height: '100dvh', minHeight: 600, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#16110D', color: CREAM, fontFamily: FRAUNCES }}>
@@ -61,7 +64,7 @@ export function MobileBoardPage({ annonces, accent, tilt }: MobileBoardPageProps
       >
         <h1 className="sr">Panneaux d'annonces</h1>
         <div style={{ display: 'flex', height: '100%', transform: `translateX(${-index * 100}%)`, transition: 'transform .5s cubic-bezier(.2,.8,.2,1)' }}>
-          {MOBILE_PANELS.map((panel, i) => (
+          {panels.map((panel, i) => (
             <MobilePanel key={panel.title} index={i} current={index} total={total} title={panel.title}>
               {panel.slots.map((slot, k) => {
                 if (slot.annonceId === null) return <EmptySlot key={`empty-${k}`} col={slot.col} row={slot.row} />

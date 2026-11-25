@@ -52,7 +52,11 @@ const CODE_BY_ID: Record<number, string> = {
   12: 'NOTE_JOURNAL',
 }
 
+/** Code du template d'une annonce : templateCode de l'API, sinon déduit de templateId, sinon STANDARD. */
+export function templateCodeOf(annonce: Annonce): string {
+  return annonce.templateCode ?? CODE_BY_ID[annonce.templateId] ?? 'STANDARD'
+}
+
 export function resolveCard(annonce: Annonce): ComponentType<CardProps> {
-  const code = annonce.templateCode ?? CODE_BY_ID[annonce.templateId] ?? 'STANDARD'
-  return CARD_BY_CODE[code] ?? CARD_BY_CODE.STANDARD
+  return CARD_BY_CODE[templateCodeOf(annonce)] ?? CARD_BY_CODE.STANDARD
 }

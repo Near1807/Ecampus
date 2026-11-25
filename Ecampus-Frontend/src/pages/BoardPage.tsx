@@ -3,7 +3,7 @@ import { BoardItem } from '../components/BoardItem'
 import { FilterBar } from '../components/layout/FilterBar'
 import { TopBar } from '../components/layout/TopBar'
 import type { FilterId } from '../config/categories'
-import { DESKTOP_SLOTS, autoSlot, type Slot } from '../config/slots'
+import { layoutDesktop } from '../layout/board'
 import { CORK, CREAM, FRAUNCES, MONO } from '../theme/tokens'
 import type { Annonce } from '../types/annonce'
 
@@ -11,29 +11,16 @@ interface BoardPageProps {
   annonces: Annonce[]
   accent: string
   tilt: boolean
+  /** 0 = disposition par défaut ; un autre entier donne une autre disposition. */
+  seed: number
 }
 
-/** Page principale (desktop) : en-tête, filtres et tableau en liège. */
-export function BoardPage({ annonces, accent, tilt }: BoardPageProps) {
+/** Page principale (desktop) : en-tête, filtres et tableau en liège rempli depuis le coin haut gauche. */
+export function BoardPage({ annonces, accent, tilt, seed }: BoardPageProps) {
   const [filter, setFilter] = useState<FilterId>('all')
 
-  const items = useMemo(() => {
-    const byId = new Map(annonces.map((a) => [a.id, a]))
-    const placed: { slot: Slot; annonce: Annonce }[] = []
-    const used = new Set<string>()
-    for (const slot of DESKTOP_SLOTS) {
-      const annonce = slot.annonceId ? byId.get(slot.annonceId) : undefined
-      if (annonce) {
-        placed.push({ slot, annonce })
-        used.add(annonce.id)
-      }
-    }
-    // Annonces sans emplacement dédié : taille automatique selon la priorité.
-    for (const annonce of annonces) {
-      if (!used.has(annonce.id)) placed.push({ slot: autoSlot(annonce), annonce })
-    }
-    return placed
-  }, [annonces])
+  const byId = useMemo(() => new Map(annonces.map((a) => [a.id, a])), [annonces])
+  const slots = useMemo(() => layoutDesktop(annonces, seed), [annonces, seed])
 
   return (
     <div style={{ minHeight: '100vh', background: '#16110D', color: CREAM, fontFamily: FRAUNCES }}>
@@ -49,16 +36,20 @@ export function BoardPage({ annonces, accent, tilt }: BoardPageProps) {
             className="board"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gridAutoRows: 104, gap: 22, padding: 36, borderRadius: 4, ...CORK, boxShadow: 'inset 0 0 50px rgba(70,35,10,.5)' }}
           >
-            {items.map(({ slot, annonce }) => (
-              <BoardItem
-                key={annonce.id}
-                slot={slot}
-                annonce={annonce}
-                accent={accent}
-                tilt={tilt}
-                dimmed={filter !== 'all' && annonce.categorie !== filter}
-              />
-            ))}
+            {slots.map((slot) => {
+              const annonce = slot.annonceId ? byId.get(slot.annonceId) : undefined
+              if (!annonce) return null
+              return (
+                <BoardItem
+                  key={annonce.id}
+                  slot={slot}
+                  annonce={annonce}
+                  accent={accent}
+                  tilt={tilt}
+                  dimmed={filter !== 'all' && annonce.categorie !== filter}
+                />
+              )
+            })}
           </div>
         </div>
         <p style={{ margin: '20px 0 0', fontFamily: MONO, fontSize: 11.5, color: 'rgba(255,244,226,.6)' }}>

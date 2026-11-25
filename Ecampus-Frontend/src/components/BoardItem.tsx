@@ -1,5 +1,5 @@
 import type { Annonce } from '../types/annonce'
-import type { Slot } from '../config/slots'
+import type { Slot } from '../layout/slot'
 import { resolveCard } from './cards/registry'
 
 interface BoardItemProps {

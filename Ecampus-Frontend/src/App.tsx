@@ -7,6 +7,8 @@ import { CREAM, DEFAULT_ACCENT, MONO } from './theme/tokens'
 /** Couleur d'accent et inclinaison des annonces (réglages du thème). */
 const ACCENT = DEFAULT_ACCENT
 const TILT = true
+/** Disposition du tableau : 0 = ordre de préférence par défaut ; essaie 1, 2, 3… pour d'autres arrangements. */
+const LAYOUT_SEED = 0
 
 function Message({ children }: { children: string }) {
   return (
@@ -24,8 +26,8 @@ export default function App() {
   if (error) return <Message>{`Impossible de charger les annonces (${error})`}</Message>
 
   return isMobile ? (
-    <MobileBoardPage annonces={annonces} accent={ACCENT} tilt={TILT} />
+    <MobileBoardPage annonces={annonces} accent={ACCENT} tilt={TILT} seed={LAYOUT_SEED} />
   ) : (
-    <BoardPage annonces={annonces} accent={ACCENT} tilt={TILT} />
+    <BoardPage annonces={annonces} accent={ACCENT} tilt={TILT} seed={LAYOUT_SEED} />
   )
 }
