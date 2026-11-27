@@ -33,20 +33,25 @@ public class ImageRepositoryTest {
 
     @Test
     void savesAndReadsBackAnImage() {
-        // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
+
         UUID authorId = userRepository.saveAndFlush(author).getId();
-        Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
+
+        Annonce annonce = new Annonce(
+                authorId, Categorie.EVENEMENT, "Title", "Content");
+
         UUID annonceId = annonceRepository.saveAndFlush(annonce).getId();
+
         Image image = new Image(annonceId, "annonces/photo1.jpg");
 
-        // Act
         Image saved = imageRepository.saveAndFlush(image);
         UUID id = saved.getId();
-        entityManager.clear();
-        Image found = imageRepository.findById(id).get();
 
-        // Assert
+        entityManager.clear();
+
+        Image found = imageRepository.findById(id).orElseThrow();
+
         assertEquals(annonceId, found.getAnnonceId());
         assertEquals("annonces/photo1.jpg", found.getStoragePath());
         assertNotNull(found.getCreatedAt());
@@ -54,40 +59,48 @@ public class ImageRepositoryTest {
 
     @Test
     void rejectsAnImageWithAnUnknownAnnonce() {
-        // Arrange
-        Image image = new Image(UUID.randomUUID(), "annonces/photo1.jpg");
+        Image image = new Image(
+                UUID.randomUUID(), "annonces/photo1.jpg");
 
-        // Act
         String errorMessage = "";
+
         try {
             imageRepository.saveAndFlush(image);
         } catch (DataIntegrityViolationException exception) {
             errorMessage = exception.getMostSpecificCause().getMessage();
         }
 
-        // Assert
+        assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("fk_images_annonces"));
     }
 
     @Test
     void rejectsTwoImagesWithTheSameStoragePath() {
-        // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
-        UUID authorId = userRepository.saveAndFlush(author).getId();
-        Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
-        UUID annonceId = annonceRepository.saveAndFlush(annonce).getId();
-        imageRepository.saveAndFlush(new Image(annonceId, "annonces/photo1.jpg"));
-        Image duplicate = new Image(annonceId, "annonces/photo1.jpg");
+        User author = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
 
-        // Act
+        UUID authorId = userRepository.saveAndFlush(author).getId();
+
+        Annonce annonce = new Annonce(
+                authorId, Categorie.EVENEMENT, "Title", "Content");
+
+        UUID annonceId = annonceRepository.saveAndFlush(annonce).getId();
+
+        imageRepository.saveAndFlush(
+                new Image(annonceId, "annonces/photo1.jpg"));
+
+        Image duplicate = new Image(
+                annonceId, "annonces/photo1.jpg");
+
         String errorMessage = "";
+
         try {
             imageRepository.saveAndFlush(duplicate);
         } catch (DataIntegrityViolationException exception) {
             errorMessage = exception.getMostSpecificCause().getMessage();
         }
 
-        // Assert
+        assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("uq_images_storage_path"));
     }
 }

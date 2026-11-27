@@ -30,14 +30,26 @@ public class ConnexionRepositoryTest {
     @Test
     void savesAndReadsBackAConnexion() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User(
+                "Ada",
+                "Lovelace",
+                "ada@example.com",
+                "hash"
+        );
+
         UUID userId = userRepository.saveAndFlush(user).getId();
-        Connexion connexion = new Connexion(userId, ConnexionStatus.REUSSIE);
+
+        Connexion connexion = new Connexion(
+                userId,
+                ConnexionStatus.REUSSIE
+        );
 
         // Act
         Connexion saved = connexionRepository.saveAndFlush(connexion);
         UUID id = saved.getId();
+
         entityManager.clear();
+
         Connexion found = connexionRepository.findById(id).get();
 
         // Assert
@@ -49,10 +61,14 @@ public class ConnexionRepositoryTest {
     @Test
     void rejectsAConnexionWithAnUnknownUser() {
         // Arrange
-        Connexion connexion = new Connexion(UUID.randomUUID(), ConnexionStatus.REUSSIE);
+        Connexion connexion = new Connexion(
+                UUID.randomUUID(),
+                ConnexionStatus.REUSSIE
+        );
 
         // Act
         String errorMessage = "";
+
         try {
             connexionRepository.saveAndFlush(connexion);
         } catch (DataIntegrityViolationException exception) {
