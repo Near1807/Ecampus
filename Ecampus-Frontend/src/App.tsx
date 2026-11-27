@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { Login } from "./Login/Login.tsx";
 import { Showcase } from "./Showcase/Showcase.tsx";
 import  Home  from "./Home/Home.tsx";
