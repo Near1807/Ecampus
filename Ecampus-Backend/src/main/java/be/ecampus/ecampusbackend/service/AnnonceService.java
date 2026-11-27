@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import be.ecampus.ecampusbackend.model.Annonce;
+import be.ecampus.ecampusbackend.model.ValidationStatus;
 import be.ecampus.ecampusbackend.repository.AnnonceRepository;
 
 @Service
@@ -45,5 +46,9 @@ public class AnnonceService {
     public void deleteAnnonce(UUID id) {
         Annonce annonce = getAnnonceById(id);
         annonceRepository.delete(annonce);
+    }
+
+    public List<Annonce> getAllValideAnnonces() {
+        return annonceRepository.findByValidationStatus(ValidationStatus.VALIDE);
     }
 }

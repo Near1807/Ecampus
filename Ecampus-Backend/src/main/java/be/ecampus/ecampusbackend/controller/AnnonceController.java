@@ -51,4 +51,9 @@ public class AnnonceController {
     public void deleteAnnonce(@PathVariable UUID id) {
         annonceService.deleteAnnonce(id);
     }
+
+    @GetMapping("/valide")
+    public List<Annonce> getAllValideAnnonces() {
+        return annonceService.getAllValideAnnonces();
+    }
 }
