@@ -33,30 +33,29 @@ public class MessageRepositoryTest {
 
     @Test
     void savesAndReadsBackAMessage() {
-        // Arrange
-        User user = new User();
-        user.setFirstname("Ada");
-        user.setLastname("Lovelace");
-        user.setMail("ada@example.com");
-        user.setPasswordHash("hash");
+        User user = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
+
+        User admin = UserTestFactory.createUser(
+                "Grace", "Hopper", "grace@example.com");
+
         UUID userId = userRepository.saveAndFlush(user).getId();
-        User admin = new User();
-        admin.setFirstname("Grace");
-        admin.setLastname("Hopper");
-        admin.setMail("grace@example.com");
-        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
+
         Conversation conversation = new Conversation(userId, adminId);
-        UUID conversationId = conversationRepository.saveAndFlush(conversation).getId();
+
+        UUID conversationId =
+                conversationRepository.saveAndFlush(conversation).getId();
+
         Message message = new Message(conversationId, userId, "Hello");
 
-        // Act
         Message saved = messageRepository.saveAndFlush(message);
         UUID id = saved.getId();
-        entityManager.clear();
-        Message found = messageRepository.findById(id).get();
 
-        // Assert
+        entityManager.clear();
+
+        Message found = messageRepository.findById(id).orElseThrow();
+
         assertEquals(conversationId, found.getConversationId());
         assertEquals(userId, found.getAuteurId());
         assertEquals("Hello", found.getContent());
@@ -66,56 +65,55 @@ public class MessageRepositoryTest {
 
     @Test
     void rejectsAMessageWithAnUnknownConversation() {
-        // Arrange
-        User user = new User();
-        user.setFirstname("Ada");
-        user.setLastname("Lovelace");
-        user.setMail("ada@example.com");
-        user.setPasswordHash("hash");
-        UUID userId = userRepository.saveAndFlush(user).getId();
-        Message message = new Message(UUID.randomUUID(), userId, "Hello");
+        User user = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
 
-        // Act
+        UUID userId = userRepository.saveAndFlush(user).getId();
+
+        Message message = new Message(
+                UUID.randomUUID(), userId, "Hello");
+
         String errorMessage = "";
+
         try {
             messageRepository.saveAndFlush(message);
         } catch (DataIntegrityViolationException exception) {
             errorMessage = exception.getMostSpecificCause().getMessage();
         }
 
-        // Assert
+        assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("fk_messages_conversations"));
     }
 
     @Test
     void rejectsAReadDateBeforeCreation() {
-        // Arrange
-        User user = new User();
-        user.setFirstname("Ada");
-        user.setLastname("Lovelace");
-        user.setMail("ada@example.com");
-        user.setPasswordHash("hash");
+        User user = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
+
+        User admin = UserTestFactory.createUser(
+                "Grace", "Hopper", "grace@example.com");
+
         UUID userId = userRepository.saveAndFlush(user).getId();
-        User admin = new User();
-        admin.setFirstname("Grace");
-        admin.setLastname("Hopper");
-        admin.setMail("grace@example.com");
-        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
+
         Conversation conversation = new Conversation(userId, adminId);
-        UUID conversationId = conversationRepository.saveAndFlush(conversation).getId();
+
+        UUID conversationId =
+                conversationRepository.saveAndFlush(conversation).getId();
+
         Message message = new Message(conversationId, userId, "Hello");
+
         message.setReadAt(Instant.now().minusSeconds(3600));
 
-        // Act
         String errorMessage = "";
+
         try {
             messageRepository.saveAndFlush(message);
         } catch (DataIntegrityViolationException exception) {
             errorMessage = exception.getMostSpecificCause().getMessage();
         }
 
-        // Assert
+        assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("chk_messages_dates"));
     }
 }

@@ -38,9 +38,8 @@ public class User {
     @Column(name = "mail", nullable = false, length = 255)
     private String mail;
 
-    // Hash computed by Spring Security, never the password itself. It must
-    // never be returned by the API nor written to logs.
-    /** Hash bcrypt/Argon2, jamais le mot de passe. Ne jamais renvoyer ni logger. */
+    // Hash computed by Spring Security, never the password itself.
+    // Never return it through the API or write it to logs.
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
@@ -58,13 +57,29 @@ public class User {
     @Column(name = "role", nullable = false, length = 20)
     private UserRole role = UserRole.USER;
 
-    /** Créateur du compte : NULL pour une inscription libre et pour le premier superadmin. */
+    /**
+     * Créateur du compte : NULL pour une inscription libre
+     * et pour le premier superadmin.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id", updatable = false)
     private User createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
+    protected User() {
+    }
+
+    /**
+     * Creates a regular, active user without two-factor authentication.
+     */
+    public User(String firstname, String lastname, String mail, String passwordHash) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.mail = mail;
+        this.passwordHash = passwordHash;
+    }
 
     @PrePersist
     void onCreate() {
