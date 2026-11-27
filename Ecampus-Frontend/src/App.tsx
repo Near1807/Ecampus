@@ -1,33 +1,20 @@
-import { useAnnonces } from './hooks/useAnnonces'
-import { useIsMobile } from './hooks/useIsMobile'
-import { BoardPage } from './pages/BoardPage'
-import { MobileBoardPage } from './pages/MobileBoardPage'
-import { CREAM, DEFAULT_ACCENT, MONO } from './theme/tokens'
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Login } from "./Login/Login.tsx";
+import { Showcase } from "./Showcase/Showcase.tsx";
+import  Home  from "./Home/Home.tsx";
 
-/** Couleur d'accent et inclinaison des annonces (réglages du thème). */
-const ACCENT = DEFAULT_ACCENT
-const TILT = true
-/** Disposition du tableau : 0 = ordre de préférence par défaut ; essaie 1, 2, 3… pour d'autres arrangements. */
-const LAYOUT_SEED = 0
-
-function Message({ children }: { children: string }) {
-  return (
-    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#16110D', color: CREAM, fontFamily: MONO, fontSize: 14 }}>
-      {children}
-    </div>
-  )
-}
-
+/**
+ * Declares the routes of the application: each path displays one page.
+ * Must be rendered inside a BrowserRouter (see main.tsx).
+ *
+ * @returns The page matching the current address.
+ */
 export default function App() {
-  const isMobile = useIsMobile(640)
-  const { annonces, loading, error } = useAnnonces()
-
-  if (loading) return <Message>Chargement du tableau…</Message>
-  if (error) return <Message>{`Impossible de charger les annonces (${error})`}</Message>
-
-  return isMobile ? (
-    <MobileBoardPage annonces={annonces} accent={ACCENT} tilt={TILT} seed={LAYOUT_SEED} />
-  ) : (
-    <BoardPage annonces={annonces} accent={ACCENT} tilt={TILT} seed={LAYOUT_SEED} />
-  )
+    return (
+        <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/showcase" element={<Showcase />} />
+        </Routes>
+    );
 }
