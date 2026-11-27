@@ -3,7 +3,7 @@ import { useIsMobile } from '../hooks/useIsMobile'
 import { BoardPage } from '../pages/BoardPage'
 import { MobileBoardPage } from '../pages/MobileBoardPage'
 import { CREAM, DEFAULT_ACCENT, MONO } from '../theme/tokens'
-import "./board.css";
+import "./Board.css";
 
 /** Couleur d'accent et inclinaison des annonces (réglages du thème). */
 const ACCENT = DEFAULT_ACCENT
