@@ -2,6 +2,10 @@ spring:
   application:
     name: Ecampus-Backend
 
+  # Charge les variables du fichier .env (MAIL_USER, MAIL_PASSWORD, ...)
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     url: jdbc:postgresql://localhost:54322/postgres
     username: postgres
@@ -10,7 +14,33 @@ spring:
   jpa :
     hibernate:
       ddl-auto: validate
-      
+
+#  mail :
+#    host : smtp.gmail.com
+#    port :  587
+    # Gmail exige un "mot de passe d'application" (16 caracteres), pas le mot de passe du compte.
+#    username : ${MAIL_USER}
+#    password : ${MAIL_PASSWORD}
+#    properties:
+#      mail :
+#       smtp :
+#          auth : true
+#          starttls :
+#            enable : true
+
+  mail:
+    host: localhost
+    port: 54325
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+
   # Premier superadmin, créé au démarrage s'il n'en existe aucun (voir SuperAdminBootstrap).
   ecampus:
     bootstrap:
