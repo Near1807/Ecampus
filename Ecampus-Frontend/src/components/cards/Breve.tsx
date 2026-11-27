@@ -18,7 +18,7 @@ export function Breve({ annonce, density }: CardProps) {
       }}
     >
       <Pin color="blue" right={lg ? 26 : 14} />
-      <div style={{ flex: '1 1 auto', padding: lg ? '14px 20px' : '16px 14px 12px', display: 'flex', flexDirection: 'column', justifyContent: lg ? 'center' : undefined, gap: 6 }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '14px 20px' : '16px 14px 12px', display: 'flex', flexDirection: 'column', justifyContent: lg ? 'center' : undefined, gap: 6 }}>
         <span style={{ fontFamily: MONO, fontSize: lg ? 10.5 : 10, fontWeight: 500, letterSpacing: '.08em', textTransform: 'uppercase' }}>
           {kickerOf(annonce, density)}
         </span>

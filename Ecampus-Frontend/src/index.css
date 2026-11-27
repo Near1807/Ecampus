@@ -28,6 +28,11 @@ a:hover {
   white-space: nowrap;
 }
 
+/* Un titre trop long pour sa carte passe à la ligne au lieu de dépasser */
+h2 {
+  overflow-wrap: anywhere;
+}
+
 input::placeholder {
   color: rgba(255, 244, 226, 0.62);
 }

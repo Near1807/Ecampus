@@ -33,19 +33,19 @@ export function AppelProjet({ annonce, density }: CardProps) {
       <article style={root}>
         <Pin color="gold" left={30} />
         <Pin color="gold" right={30} />
-        <div style={{ flex: '1 1 auto', padding: '24px 28px', display: 'flex', flexWrap: 'wrap', gap: '20px 28px' }}>
-          <div style={{ flex: '1 1 300px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: '22px 24px', display: 'flex', flexWrap: 'wrap', gap: '16px 20px' }}>
+          <div style={{ flex: '1 1 220px', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px 12px' }}>
               <Tag fontSize={11} padding="4px 8px" border="1px solid rgba(234,241,255,.7)">{d.kicker}</Tag>
               <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '.06em', color: 'rgba(234,241,255,.78)' }}>{d.ref}</span>
             </div>
-            <h2 style={{ margin: 0, fontFamily: FRAUNCES, fontWeight: 600, fontSize: 28, lineHeight: 1.1, letterSpacing: '-.01em' }}>{annonce.titre}</h2>
+            <h2 style={{ margin: 0, fontFamily: FRAUNCES, fontWeight: 600, fontSize: 'clamp(20px, 2vw, 26px)', lineHeight: 1.1, letterSpacing: '-.01em' }}>{annonce.titre}</h2>
             <p style={{ margin: 0, fontFamily: MONO, fontSize: 12.5, lineHeight: 1.55, color: 'rgba(234,241,255,.88)' }}>{annonce.descriptionLongue}</p>
             {link(12.5, { marginTop: 'auto' })}
           </div>
-          <div style={{ flex: '0 0 150px', border: '1px dashed rgba(234,241,255,.6)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 4, padding: 14 }}>
+          <div style={{ flex: '0 0 116px', border: '1px dashed rgba(234,241,255,.6)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 4, padding: 10 }}>
             <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(234,241,255,.8)' }}>Dépôt avant le</span>
-            <span style={{ fontFamily: ANTON, fontSize: 54, lineHeight: 1 }}>{d.deadline}</span>
+            <span style={{ fontFamily: ANTON, fontSize: 44, lineHeight: 1 }}>{d.deadline}</span>
             <span style={{ fontFamily: MONO, fontSize: 12, color: 'rgba(234,241,255,.8)' }}>{d.deadlineYear}</span>
           </div>
         </div>
@@ -58,7 +58,7 @@ export function AppelProjet({ annonce, density }: CardProps) {
       <article style={root}>
         <Pin color="gold" left={22} />
         <Pin color="gold" right={22} />
-        <div style={{ flex: '1 1 auto', padding: '18px 20px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: '18px 20px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <Tag fontSize={10.5} padding="3px 7px" border="1px solid rgba(234,241,255,.7)">{d.kicker}</Tag>
             <span style={{ fontFamily: MONO, fontSize: 10.5, color: 'rgba(234,241,255,.78)' }}>{d.ref}</span>
@@ -82,7 +82,7 @@ export function AppelProjet({ annonce, density }: CardProps) {
   return (
     <article style={root}>
       <Pin color="gold" />
-      <div style={{ flex: '1 1 auto', padding: '16px 14px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: '16px 14px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         <Tag fontSize={10} padding="2px 6px" border="1px solid rgba(234,241,255,.7)" alignSelf="flex-start">{d.kicker}</Tag>
         <h2 style={{ margin: 0, fontFamily: FRAUNCES, fontWeight: 600, fontSize: 17, lineHeight: 1.12 }}>{annonce.titre}</h2>
         <div style={{ marginTop: 'auto', border: '1px dashed rgba(234,241,255,.6)', padding: '8px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>

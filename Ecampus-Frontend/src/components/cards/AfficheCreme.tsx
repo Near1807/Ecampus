@@ -1,4 +1,4 @@
-import { ANTON, CREAM, FRAUNCES, MONO } from '../../theme/tokens'
+import { ANTON, CREAM, FRAUNCES, MONO, pick } from '../../theme/tokens'
 import { Pin } from '../ui/Pin'
 import { Tag } from '../ui/Tag'
 import { kickerOf, type CardProps } from './types'
@@ -21,12 +21,33 @@ export function AfficheCreme({ annonce, accent, density }: CardProps) {
       }}
     >
       <Pin color="green" />
-      <div style={{ flex: '1 1 auto', padding: lg ? '24px 26px 20px' : '16px 20px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 8 }}>
-        <Tag fontSize={lg ? 11 : 10} padding={lg ? '4px 8px' : '2px 6px'} border={`1px solid ${accent}`} color={accent} alignSelf="flex-start">
+      <div
+        style={{
+          flex: '1 1 auto',
+          minHeight: 0,
+          overflow: 'hidden',
+          padding: pick(density, '24px 26px 20px', '16px 20px', '14px 14px 12px'),
+          display: 'flex',
+          flexDirection: 'column',
+          gap: pick(density, 10, 8, 8),
+        }}
+      >
+        <Tag
+          fontSize={pick(density, 11, 10, 10)}
+          padding={lg ? '4px 8px' : '2px 6px'}
+          border={`1px solid ${accent}`}
+          color={accent}
+          alignSelf="flex-start"
+        >
           {kickerOf(annonce, density) || 'Annonce'}
         </Tag>
-        <h2 style={{ margin: 0, fontFamily: ANTON, fontWeight: 400, fontSize: lg ? 52 : 38, lineHeight: 0.92, textTransform: 'uppercase', color: accent }}>{annonce.titre}</h2>
-        <p style={{ margin: lg ? 0 : 'auto 0 0', fontFamily: FRAUNCES, fontSize: lg ? 16 : 14, lineHeight: 1.35 }}>{annonce.descriptionLongue}</p>
+        {/* 26 px en demi-largeur : « AFTERWORK » tient dans une carte d'une colonne */}
+        <h2 style={{ margin: 0, fontFamily: ANTON, fontWeight: 400, fontSize: pick(density, 52, 38, 26), lineHeight: 0.92, textTransform: 'uppercase', color: accent }}>
+          {annonce.titre}
+        </h2>
+        <p style={{ margin: lg ? 0 : 'auto 0 0', fontFamily: FRAUNCES, fontSize: pick(density, 16, 14, 12.5), lineHeight: 1.35 }}>
+          {annonce.descriptionLongue}
+        </p>
         {lg && d.signature && (
           <p style={{ margin: 'auto 0 0', fontFamily: MONO, fontSize: 11, color: '#6B5A4A' }}>{d.signature}</p>
         )}
