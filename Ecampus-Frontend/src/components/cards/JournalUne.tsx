@@ -30,7 +30,7 @@ export function JournalUne({ annonce, density }: CardProps) {
     return (
       <article style={root}>
         <Tape w={58} h={22} rotate={-7} left={14} />
-        <div style={{ flex: '1 1 auto', padding: '14px 12px 12px', display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
+        <div style={{ flex: '1 1 auto', minHeight: 0, padding: '14px 12px 12px', display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden' }}>
           <div style={{ borderTop: '3px solid #1D1A16', borderBottom: '1px solid #1D1A16', padding: '5px 0 4px', textAlign: 'center' }}>
             <div style={{ fontFamily: FRAUNCES, fontWeight: 700, fontSize: 17, lineHeight: 1.15 }}>Le Journal</div>
             <div style={{ marginTop: 2, fontFamily: MONO, fontSize: 9.5, letterSpacing: '.05em', textTransform: 'uppercase' }}>
@@ -51,7 +51,7 @@ export function JournalUne({ annonce, density }: CardProps) {
     <article style={root}>
       <Tape w={lg ? 86 : 72} h={lg ? 26 : 24} rotate={-7} top={lg ? -12 : -11} left={lg ? 22 : 18} />
       <Tape w={lg ? 78 : 66} h={lg ? 26 : 24} rotate={5} right={lg ? 20 : 16} />
-      <div style={{ flex: '1 1 auto', padding: lg ? '24px 24px 18px' : '16px 18px 14px', display: 'flex', flexDirection: 'column', gap: lg ? 12 : 10, overflow: 'hidden' }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, padding: lg ? '24px 24px 18px' : '16px 18px 14px', display: 'flex', flexDirection: 'column', gap: lg ? 12 : 10, overflow: 'hidden' }}>
         <div style={{ borderTop: '3px solid #1D1A16', borderBottom: '1px solid #1D1A16', padding: lg ? '8px 0 6px' : '6px 0 5px', textAlign: 'center' }}>
           <div style={{ fontFamily: FRAUNCES, fontWeight: 700, fontSize: lg ? 26 : 21, lineHeight: 1.1, letterSpacing: lg ? '-.01em' : undefined }}>{NOM_JOURNAL}</div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: lg ? 4 : 3, fontFamily: MONO, fontSize: lg ? 10.5 : 9.5, letterSpacing: lg ? '.06em' : '.05em', textTransform: 'uppercase' }}>

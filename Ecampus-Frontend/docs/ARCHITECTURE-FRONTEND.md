@@ -380,6 +380,8 @@ kickerOf(annonce, density)  // étiquette complète en lg, courte sinon
 
 Règles que respectent toutes les cartes :
 - la racine est un `<article>` (ou un `<div>` pour Etiquette/Polaroid) avec `flex: '1 1 auto'` pour **remplir la case de la grille** ;
+- le conteneur du contenu a `minHeight: 0` et `overflow: 'hidden'` : **le contenu ne peut pas sortir du cadre** de la carte (au pire il est coupé) ; les punaises et scotchs sont posés en dehors de ce conteneur, donc non coupés ;
+- les titres `<h2>` passent à la ligne même sans espace (règle `h2 { overflow-wrap: anywhere }` dans `index.css`) ;
 - `position: 'relative'` pour que punaises et scotch se placent par rapport à la carte ;
 - l'inclinaison, la position et l'atténuation sont gérées **par `BoardItem`**, pas par la carte.
 
@@ -401,7 +403,7 @@ Les ids correspondent à la migration `20261120120000_seed_templates.sql`.
 
 | Code | Id | Composant | Look | Densités | Décoration |
 |---|---|---|---|---|---|
-| `STANDARD` | 0 | `AfficheCreme` | affiche crème, gros titre couleur d'accent | lg, md | punaise verte |
+| `STANDARD` | 0 | `AfficheCreme` | affiche crème, gros titre couleur d'accent | lg, md, sm | punaise verte |
 | `AFFICHE_UNE` | 1 | `AfficheUne` | grande carte rouge « À la une » | lg, md, variante `minimal` | punaise blanche + cercles |
 | `APPEL_PROJET` | 2 | `AppelProjet` | papier millimétré bleu, date limite | lg, md, sm | 2 punaises dorées (1 en sm) |
 | `JOURNAL_UNE` | 3 | `JournalUne` | une de journal, texte en 2 colonnes | lg, md, sm | 2 scotchs (1 en sm) |
@@ -409,7 +411,7 @@ Les ids correspondent à la migration `20261120120000_seed_templates.sql`.
 | `ETIQUETTE` | 5 | `Etiquette` | étiquette jaune à œillet | lg, sm | punaise rouge + œillet |
 | `POST_IT` | 6 | `PostIt` | papier jaune | lg, sm | scotch centré |
 | `POLAROID` | 7 | `Polaroid` | photo + légende | lg, sm | punaise rouge |
-| `AFFICHE_CREME` | 8 | `AfficheCreme` | idem `STANDARD` | lg, md | punaise verte |
+| `AFFICHE_CREME` | 8 | `AfficheCreme` | idem `STANDARD` | lg, md, sm | punaise verte |
 | `AFFICHE_ACCENT` | 9 | `AfficheAccent` | carte pleine couleur + pictogramme | lg, sm | punaise sombre |
 | `AFFICHE_SOMBRE` | 10 | `AfficheSombre` | affiche sombre | lg, sm | punaise dorée à gauche |
 | `FEUILLE_QUADRILLEE` | 11 | `FeuilleQuadrillee` | feuille à lignes + tags | lg, md | punaise bleue |
@@ -451,6 +453,7 @@ Pour chaque carte : les champs de l'annonce lus, et ce qui diffère entre deskto
 
 #### `AfficheCreme` — affiche crème (et `STANDARD`)
 - **Lit** : `titre`, `descriptionLongue`, `details.kicker` (sinon « Annonce »), `signature` (lg seulement).
+- **3 tailles de titre** : 52 px (lg), 38 px (md, pleine largeur mobile), **26 px (sm, demi-largeur mobile)**. Les deux premières sont trop grandes pour un mot long comme « AFTERWORK » dans une carte d'une colonne.
 - C'est le **template de secours** quand le code de template est inconnu.
 
 #### `AfficheAccent` — pleine couleur + pictogramme
@@ -588,7 +591,7 @@ HACK = hackathon (3×4), APPC = appel-campus (3×2), JOUR = journal-robotique (2
 
 ### 9.7 Inclinaison (`tiltFor`)
 
-L'inclinaison n'est plus saisie à la main : `tiltFor(id)` (dans `layout/slot.ts`) la déduit de l'id de l'annonce, entre **-2,6° et +2,6°**. Elle est **stable** : une annonce garde la même inclinaison d'un rendu à l'autre.
+L'inclinaison n'est plus saisie à la main : `tiltFor(id)` (dans `layout/slot.ts`) la déduit de l'id de l'annonce, entre **-2,6° et +2,6° pour une carte d'une colonne**. Elle est **divisée par le nombre de colonnes** de la carte (une carte large qui penche autant déborderait sur ses voisines) : ±1,3° pour 2 colonnes, ±0,9° pour 3. Elle est **stable** : une annonce garde la même inclinaison d'un rendu à l'autre.
 
 ### 9.8 Réglages en un coup d'œil
 
@@ -673,7 +676,7 @@ const TILT = true               // inclinaison des annonces
 - Calcule les emplacements avec `layoutDesktop(annonces, seed)` (mémoïsé) : remplissage automatique depuis le coin haut gauche (voir [§9](#9-placement-automatique-sur-la-grille-layout)).
 - Une annonce est **estompée** si `filter !== 'all'` et `annonce.categorie !== filter`.
 - Structure : `<header>` (`TopBar` + `FilterBar`) puis `<main>` avec le cadre en bois et la grille de liège.
-- Grille : 6 colonnes, `gridAutoRows: 104`, `gap: 22`, `padding: 36`, largeur max du contenu 1440 px.
+- Grille : 6 colonnes, `gridAutoRows: 'minmax(104px, auto)'` (les lignes font **au moins 104 px et grandissent si le contenu d'une carte est plus haut**, ce qui évite qu'une carte déborde sur ses voisines), `gap: 22`, `padding: 36`, largeur max du contenu 1440 px.
 
 ### `pages/MobileBoardPage.tsx` — mobile
 - **État** : `index` (panneau courant) et `startX` (début du geste).
@@ -730,7 +733,7 @@ Ou change `DEFAULT_ACCENT` dans `theme/tokens.ts`.
 `App.tsx` : `const TILT = false`.
 
 ### Changer l'amplitude de l'inclinaison
-`layout/slot.ts`, fonction `tiltFor` : la dernière ligne est `((h >>> 0) % 521) / 100 - 2.6` (plage de -2,6° à +2,6°). Pour ±1,5° : `((h >>> 0) % 301) / 100 - 1.5`.
+`layout/slot.ts`, fonction `tiltFor` : la dernière ligne est `((h >>> 0) % 521) / 100 - 2.6` (plage de -2,6° à +2,6° pour une carte d'une colonne). Pour ±1,5° : `((h >>> 0) % 301) / 100 - 1.5`. La division par le nombre de colonnes se fait dans `layout/board.ts` (`tiltFor(...) / p.cols`).
 
 ### Modifier le texte d'une annonce de démo
 `data/mockAnnonces.ts` : édite `titre`, `descriptionLongue`, `descriptionCourte` ou les champs de `details`.
@@ -934,7 +937,9 @@ La base ne stocke que `id`, `code`, `nom`, `actif` : **le template lui-même est
 | Erreur TypeScript sur `.jpg` | types Vite absents | `tsconfig.app.json` doit contenir `"types": ["vite/client"]` |
 | « Impossible de charger les annonces (… 401 / 404) » | `VITE_USE_MOCK=false` sans endpoint ou sans auth | remettre le mode démo ou créer / ouvrir `GET /api/annonces` |
 | Une annonce n'apparaît pas | `validationStatus` ≠ `VALIDE` ; ou plus de place (`maxRows`) ; ou, sur mobile, panneau « À la une » plein (elle reste dans son panneau de catégorie) | vérifier le statut ; augmenter `maxRows` ; regarder le panneau de sa catégorie |
+| Des cartes en recouvrent d'autres | contenu plus haut que la case (écran étroit, texte long) ou inclinaison trop forte | vérifier `gridAutoRows: 'minmax(104px, auto)'` dans `BoardPage.tsx` ; réduire l'amplitude dans `tiltFor` ; ou `TILT = false` dans `App.tsx` |
 | Cases vides dans le tableau | pas assez d'annonces, ou aucune forme ne tient dans l'espace restant | ajouter des formes plus petites dans `layout/shapes.ts` ; essayer un autre `LAYOUT_SEED` |
+| Un titre sort de sa carte (mobile) | taille de titre trop grande pour la largeur de la carte (1 colonne = environ 130 px de texte) | réduire la taille de ce template pour la densité `sm` (ex. `pick(density, 52, 38, 26)`) |
 | Texte tronqué dans une carte | forme trop petite pour le contenu | retirer cette forme de `layout/shapes.ts` pour ce template |
 | Mauvaise carte affichée | `templateId` / `templateCode` inconnu → `STANDARD` | vérifier `registry.ts` et la table `templates` |
 | La version mobile ne s'affiche pas | fenêtre > 640 px | réduire la fenêtre ou utiliser le mode appareil (F12) |

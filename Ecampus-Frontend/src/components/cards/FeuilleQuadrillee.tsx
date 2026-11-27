@@ -20,7 +20,7 @@ export function FeuilleQuadrillee({ annonce, density }: CardProps) {
       }}
     >
       <Pin color="blue" top={-12} />
-      <div style={{ flex: '1 1 auto', padding: lg ? '16px 22px 18px' : '16px 20px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 8 }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '16px 22px 18px' : '16px 20px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 8 }}>
         <span style={{ fontFamily: MONO, fontSize: lg ? 11 : 10.5, fontWeight: 500, letterSpacing: '.08em', textTransform: 'uppercase', color: '#1E3A6B' }}>
           {kickerOf(annonce, density)}
         </span>

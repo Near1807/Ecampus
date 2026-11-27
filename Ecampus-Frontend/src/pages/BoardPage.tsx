@@ -34,7 +34,7 @@ export function BoardPage({ annonces, accent, tilt, seed }: BoardPageProps) {
         <div style={{ background: '#3A2A1E', padding: 14, borderRadius: 10, boxShadow: 'inset 0 0 0 1px rgba(255,244,226,.06), 0 30px 60px -24px rgba(0,0,0,.7)' }}>
           <div
             className="board"
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gridAutoRows: 104, gap: 22, padding: 36, borderRadius: 4, ...CORK, boxShadow: 'inset 0 0 50px rgba(70,35,10,.5)' }}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gridAutoRows: 'minmax(104px, auto)', gap: 22, padding: 36, borderRadius: 4, ...CORK, boxShadow: 'inset 0 0 50px rgba(70,35,10,.5)' }}
           >
             {slots.map((slot) => {
               const annonce = slot.annonceId ? byId.get(slot.annonceId) : undefined

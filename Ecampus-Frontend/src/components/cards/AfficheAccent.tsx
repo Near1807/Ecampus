@@ -22,7 +22,7 @@ export function AfficheAccent({ annonce, accent, density }: CardProps) {
       }}
     >
       <Pin color="dark" />
-      <div style={{ flex: '1 1 auto', padding: lg ? '20px 18px 16px' : '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 8 }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '20px 18px 16px' : '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 8 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: lg ? 8 : 6 }}>
           <Tag fontSize={lg ? 10.5 : 10} padding={lg ? '3px 7px' : '2px 6px'} border="1px solid rgba(255,244,226,.7)">
             {kickerOf(annonce, density)}
