@@ -3,7 +3,7 @@ package be.ecampus.ecampusbackend.service;
 import be.ecampus.ecampusbackend.model.Annonce;
 import be.ecampus.ecampusbackend.model.Conversation;
 import be.ecampus.ecampusbackend.model.Message;
-import be.ecampus.ecampusbackend.model.Role;
+import be.ecampus.ecampusbackend.model.UserRole;
 import be.ecampus.ecampusbackend.model.User;
 import be.ecampus.ecampusbackend.repository.AnnonceRepository;
 import be.ecampus.ecampusbackend.repository.ConversationRepository;
@@ -47,7 +47,7 @@ public class MessagerieService {
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin introuvable"));
 
-        if (admin.getRole() == Role.USER) {
+        if (admin.getRole() == UserRole.USER) {
             throw new IllegalArgumentException("Seul un administrateur peut ouvrir une discussion de modération.");
         }
         if (annonce.getAuteurId().equals(admin.getId())) {
