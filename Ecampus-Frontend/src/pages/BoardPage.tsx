@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { BoardItem } from '../components/BoardItem'
 import { FilterBar } from '../components/layout/FilterBar'
-import { TopBar } from '../components/layout/TopBar'
 import type { FilterId } from '../config/categories'
 import { layoutDesktop } from '../layout/board'
 import { CORK, CREAM, FRAUNCES, MONO } from '../theme/tokens'
@@ -23,9 +22,8 @@ export function BoardPage({ annonces, accent, tilt, seed }: BoardPageProps) {
   const slots = useMemo(() => layoutDesktop(annonces, seed), [annonces, seed])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#16110D', color: CREAM, fontFamily: FRAUNCES }}>
+    <div style={{ minHeight: '100%', background: '#16110D', color: CREAM, fontFamily: FRAUNCES }}>
       <header style={{ borderBottom: '1px solid rgba(255,244,226,.12)' }}>
-        <TopBar accent={accent} />
         <FilterBar accent={accent} filter={filter} onChange={setFilter} />
       </header>
 

@@ -84,7 +84,7 @@ export function Login() {
                             <div className="flex flex-col gap-1.5">
                                 <div className="flex items-center justify-between">
                                     <Label color="muted">Mot de passe</Label>
-                                    <TextLink href="#">Mot de passe oublié ?</TextLink>
+                                    <TextLink href="/forgotten-password">Mot de passe oublié ?</TextLink>
                                 </div>
                                 <Input
                                     label="Mot de passe"
@@ -112,7 +112,7 @@ export function Login() {
 
                             <div className="text-center">
                                 <Small color="muted">
-                                    Pas encore de compte ? <TextLink href="#">Créer un compte</TextLink>
+                                    Pas encore de compte ? <TextLink href="/register">Créer un compte</TextLink>
                                 </Small>
                             </div>
                         </form>

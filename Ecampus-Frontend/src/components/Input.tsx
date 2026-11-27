@@ -2,7 +2,7 @@ import type { ChangeEvent, InputHTMLAttributes } from "react";
 import { Icon } from "./Icon";
 
 /** Kind of field: "text", "email", "password" (hides the characters) or "search". */
-type InputType = "text" | "email" | "password" | "search";
+type InputType = "text" | "email" | "password" | "search" | "date" | "datetime-local";
 
 interface InputProps
     extends Omit<
