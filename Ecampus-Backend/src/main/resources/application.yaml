@@ -2,6 +2,10 @@ spring:
   application:
     name: Ecampus-Backend
 
+  # Charge les variables du fichier .env (MAIL_USER, MAIL_PASSWORD, ...)
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:54322/postgres}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -11,12 +15,37 @@ spring:
     hibernate:
       ddl-auto: validate
 
-# Premier superadmin, créé au démarrage
-# s'il n'en existe aucun.
-ecampus:
-  bootstrap:
-    superadmin:
-      mail: ${ECAMPUS_SUPERADMIN_MAIL:}
-      password: ${ECAMPUS_SUPERADMIN_PASSWORD:}
-      firstname: ${ECAMPUS_SUPERADMIN_FIRSTNAME:Super}
-      lastname: ${ECAMPUS_SUPERADMIN_LASTNAME:Admin}
+#  mail :
+#    host : smtp.gmail.com
+#    port :  587
+    # Gmail exige un "mot de passe d'application" (16 caracteres), pas le mot de passe du compte.
+#    username : ${MAIL_USER}
+#    password : ${MAIL_PASSWORD}
+#    properties:
+#      mail :
+#       smtp :
+#          auth : true
+#          starttls :
+#            enable : true
+
+  mail:
+    host: localhost
+    port: 54325
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+
+  # Premier superadmin, créé au démarrage s'il n'en existe aucun (voir SuperAdminBootstrap).
+  ecampus:
+    bootstrap:
+      superadmin:
+        mail: ${ECAMPUS_SUPERADMIN_MAIL:}
+        password: ${ECAMPUS_SUPERADMIN_PASSWORD:}
+        firstname: ${ECAMPUS_SUPERADMIN_FIRSTNAME:Super}
+        lastname: ${ECAMPUS_SUPERADMIN_LASTNAME:Admin}
