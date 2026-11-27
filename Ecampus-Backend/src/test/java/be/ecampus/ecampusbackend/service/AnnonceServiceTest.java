@@ -1,13 +1,18 @@
 package be.ecampus.ecampusbackend.service;
 
+import be.ecampus.ecampusbackend.exception.ApiException;
 import be.ecampus.ecampusbackend.model.Annonce;
+import be.ecampus.ecampusbackend.model.User;
+import be.ecampus.ecampusbackend.model.UserRole;
 import be.ecampus.ecampusbackend.model.ValidationStatus;
 import be.ecampus.ecampusbackend.repository.AnnonceRepository;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +28,12 @@ class AnnonceServiceTest {
     @Mock
     private AnnonceRepository annonceRepository;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private Authentication authentication;
+
     @InjectMocks
     private AnnonceService annonceService;
 
@@ -35,9 +46,30 @@ class AnnonceServiceTest {
         );
     }
 
+    private User createAdmin() {
+        User admin = new User(
+                "Admin",
+                "Test",
+                "admin@test.com",
+                "hash"
+        );
+        admin.setRole(UserRole.ADMIN);
+        return admin;
+    }
+
+    private User createUser() {
+        User user = new User(
+                "User",
+                "Test",
+                "user@test.com",
+                "hash"
+        );
+        user.setRole(UserRole.USER);
+        return user;
+    }
+
     @Test
     void getsAllAnnonces() {
-        // Arrange
         List<Annonce> annonces = List.of(
                 createTestAnnonce(),
                 createTestAnnonce()
@@ -45,42 +77,57 @@ class AnnonceServiceTest {
 
         when(annonceRepository.findAll()).thenReturn(annonces);
 
-        // Act
         List<Annonce> result = annonceService.getAllAnnonces();
 
-        // Assert
         assertEquals(2, result.size());
         assertEquals(annonces, result);
+
         verify(annonceRepository).findAll();
     }
 
     @Test
+    void getsAllValideAnnonces() {
+        List<Annonce> annonces = List.of(
+                createTestAnnonce(),
+                createTestAnnonce()
+        );
+
+        when(annonceRepository.findByValidationStatus(
+                ValidationStatus.VALIDE))
+                .thenReturn(annonces);
+
+        List<Annonce> result = annonceService.getAllValideAnnonces();
+
+        assertEquals(2, result.size());
+        assertEquals(annonces, result);
+
+        verify(annonceRepository)
+                .findByValidationStatus(ValidationStatus.VALIDE);
+    }
+
+    @Test
     void getsAnnonceById() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Annonce annonce = createTestAnnonce();
 
         when(annonceRepository.findById(id))
                 .thenReturn(Optional.of(annonce));
 
-        // Act
         Annonce result = annonceService.getAnnonceById(id);
 
-        // Assert
         assertNotNull(result);
         assertEquals(annonce, result);
+
         verify(annonceRepository).findById(id);
     }
 
     @Test
     void throwsExceptionWhenAnnonceDoesNotExist() {
-        // Arrange
         UUID id = UUID.randomUUID();
 
         when(annonceRepository.findById(id))
                 .thenReturn(Optional.empty());
 
-        // Act & Assert
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> annonceService.getAnnonceById(id)
@@ -93,25 +140,23 @@ class AnnonceServiceTest {
 
     @Test
     void createsAnnonce() {
-        // Arrange
         Annonce annonce = createTestAnnonce();
 
         when(annonceRepository.save(annonce))
                 .thenReturn(annonce);
 
-        // Act
         Annonce result = annonceService.createAnnonce(annonce);
 
-        // Assert
         assertNotNull(result);
         assertEquals(annonce, result);
+        assertEquals(ValidationStatus.EN_ATTENTE,
+                result.getValidationStatus());
 
         verify(annonceRepository).save(annonce);
     }
 
     @Test
     void updatesAnnonce() {
-        // Arrange
         UUID id = UUID.randomUUID();
 
         Annonce existingAnnonce = createTestAnnonce();
@@ -133,15 +178,14 @@ class AnnonceServiceTest {
         when(annonceRepository.save(existingAnnonce))
                 .thenReturn(existingAnnonce);
 
-        // Act
         Annonce result = annonceService.updateAnnonce(id, updatedAnnonce);
 
-        // Assert
         assertNotNull(result);
         assertEquals(moderatorId, result.getModerateurId());
         assertEquals(moderatedAt, result.getModeratedAt());
         assertEquals(2, result.getTemplateId());
-        assertEquals(ValidationStatus.EN_ATTENTE, result.getValidationStatus());
+        assertEquals(ValidationStatus.EN_ATTENTE,
+                result.getValidationStatus());
         assertEquals(expiresAt, result.getExpiresAt());
 
         verify(annonceRepository).findById(id);
@@ -149,31 +193,140 @@ class AnnonceServiceTest {
     }
 
     @Test
+    void validatesPendingAnnonce() {
+        UUID id = UUID.randomUUID();
+        Annonce annonce = createTestAnnonce();
+        User admin = createAdmin();
+
+        when(userService.currentUser(authentication)).thenReturn(admin);
+        when(annonceRepository.findById(id))
+                .thenReturn(Optional.of(annonce));
+        when(annonceRepository.save(annonce)).thenReturn(annonce);
+
+        Annonce result = annonceService.validerAnnonce(id, authentication);
+
+        assertEquals(ValidationStatus.VALIDE,
+                result.getValidationStatus());
+        assertEquals(admin.getId(), result.getModerateurId());
+        assertNotNull(result.getModeratedAt());
+
+        verify(annonceRepository).save(annonce);
+    }
+
+    @Test
+    void declinesPendingAnnonce() {
+        UUID id = UUID.randomUUID();
+        Annonce annonce = createTestAnnonce();
+        User admin = createAdmin();
+
+        when(userService.currentUser(authentication)).thenReturn(admin);
+        when(annonceRepository.findById(id))
+                .thenReturn(Optional.of(annonce));
+        when(annonceRepository.save(annonce)).thenReturn(annonce);
+
+        Annonce result = annonceService.declinerAnnonce(id, authentication);
+
+        assertEquals(ValidationStatus.DECLINE,
+                result.getValidationStatus());
+        assertEquals(admin.getId(), result.getModerateurId());
+        assertNotNull(result.getModeratedAt());
+
+        verify(annonceRepository).save(annonce);
+    }
+
+    @Test
+    void cannotValidateAlreadyModeratedAnnonce() {
+        UUID id = UUID.randomUUID();
+        Annonce annonce = createTestAnnonce();
+        User admin = createAdmin();
+
+        annonce.setValidationStatus(ValidationStatus.DECLINE);
+
+        when(userService.currentUser(authentication)).thenReturn(admin);
+        when(annonceRepository.findById(id))
+                .thenReturn(Optional.of(annonce));
+
+        assertThrows(
+                ApiException.class,
+                () -> annonceService.validerAnnonce(id, authentication)
+        );
+
+        verify(annonceRepository, never()).save(any());
+    }
+
+    @Test
+    void cannotDeclineAlreadyModeratedAnnonce() {
+        UUID id = UUID.randomUUID();
+        Annonce annonce = createTestAnnonce();
+        User admin = createAdmin();
+
+        annonce.setValidationStatus(ValidationStatus.VALIDE);
+
+        when(userService.currentUser(authentication)).thenReturn(admin);
+        when(annonceRepository.findById(id))
+                .thenReturn(Optional.of(annonce));
+
+        assertThrows(
+                ApiException.class,
+                () -> annonceService.declinerAnnonce(id, authentication)
+        );
+
+        verify(annonceRepository, never()).save(any());
+    }
+
+    @Test
+    void regularUserCannotValidateAnnonce() {
+        UUID id = UUID.randomUUID();
+        User user = createUser();
+
+        when(userService.currentUser(authentication)).thenReturn(user);
+
+        assertThrows(
+                ApiException.class,
+                () -> annonceService.validerAnnonce(id, authentication)
+        );
+
+        verify(annonceRepository, never()).findById(any());
+        verify(annonceRepository, never()).save(any());
+    }
+
+    @Test
+    void regularUserCannotDeclineAnnonce() {
+        UUID id = UUID.randomUUID();
+        User user = createUser();
+
+        when(userService.currentUser(authentication)).thenReturn(user);
+
+        assertThrows(
+                ApiException.class,
+                () -> annonceService.declinerAnnonce(id, authentication)
+        );
+
+        verify(annonceRepository, never()).findById(any());
+        verify(annonceRepository, never()).save(any());
+    }
+
+    @Test
     void deletesAnnonce() {
-        // Arrange
         UUID id = UUID.randomUUID();
         Annonce annonce = createTestAnnonce();
 
         when(annonceRepository.findById(id))
                 .thenReturn(Optional.of(annonce));
 
-        // Act
         annonceService.deleteAnnonce(id);
 
-        // Assert
         verify(annonceRepository).findById(id);
         verify(annonceRepository).delete(annonce);
     }
 
     @Test
     void doesNotDeleteAnnonceWhenItDoesNotExist() {
-        // Arrange
         UUID id = UUID.randomUUID();
 
         when(annonceRepository.findById(id))
                 .thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(
                 RuntimeException.class,
                 () -> annonceService.deleteAnnonce(id)
