@@ -31,9 +31,17 @@ public class ConversationRepositoryTest {
     @Test
     void savesAndReadsBackAConversation() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
         UUID userId = userRepository.saveAndFlush(user).getId();
-        User admin = new User("Grace", "Hopper", "grace@example.com", "hash");
+        User admin = new User();
+        admin.setFirstname("Grace");
+        admin.setLastname("Hopper");
+        admin.setMail("grace@example.com");
+        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
         Conversation conversation = new Conversation(userId, adminId);
 
@@ -52,7 +60,11 @@ public class ConversationRepositoryTest {
     @Test
     void rejectsAConversationWithTheSameUserAndAdmin() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
         UUID userId = userRepository.saveAndFlush(user).getId();
         Conversation conversation = new Conversation(userId, userId);
 
@@ -71,7 +83,11 @@ public class ConversationRepositoryTest {
     @Test
     void rejectsAConversationWithAnUnknownUser() {
         // Arrange
-        User admin = new User("Grace", "Hopper", "grace@example.com", "hash");
+        User admin = new User();
+        admin.setFirstname("Grace");
+        admin.setLastname("Hopper");
+        admin.setMail("grace@example.com");
+        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
         Conversation conversation = new Conversation(UUID.randomUUID(), adminId);
 

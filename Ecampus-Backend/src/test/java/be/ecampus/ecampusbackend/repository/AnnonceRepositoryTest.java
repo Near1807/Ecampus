@@ -33,7 +33,11 @@ public class AnnonceRepositoryTest {
     @Test
     void savesAndReadsBackAnAnnonce() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
@@ -73,7 +77,11 @@ public class AnnonceRepositoryTest {
     @Test
     void rejectsAnAnnonceWithAnUnknownTemplate() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
@@ -94,7 +102,11 @@ public class AnnonceRepositoryTest {
     @Test
     void rejectsSelfModeration() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
@@ -117,7 +129,11 @@ public class AnnonceRepositoryTest {
     @Test
     void rejectsAValidatedStatusWithoutModerator() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
@@ -138,10 +154,18 @@ public class AnnonceRepositoryTest {
     @Test
     void rejectsAModerationDateBeforeCreation() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
-        User moderator = new User("Grace", "Hopper", "grace@example.com", "hash");
+        User moderator = new User();
+        moderator.setFirstname("Grace");
+        moderator.setLastname("Hopper");
+        moderator.setMail("grace@example.com");
+        moderator.setPasswordHash("hash");
         User savedModerator = userRepository.saveAndFlush(moderator);
         UUID moderatorId = savedModerator.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
@@ -163,10 +187,18 @@ public class AnnonceRepositoryTest {
 
     @Test
     void rejectsAModeratorWithoutModerationDate(){
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
-        User moderator = new User("Grace", "Hopper", "grace@example.com", "hash");
+        User moderator = new User();
+        moderator.setFirstname("Grace");
+        moderator.setLastname("Hopper");
+        moderator.setMail("grace@example.com");
+        moderator.setPasswordHash("hash");
         User savedModerator = userRepository.saveAndFlush(moderator);
         UUID moderatorId = savedModerator.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
@@ -185,7 +217,11 @@ public class AnnonceRepositoryTest {
 
     @Test
     void validExpirationDate(){
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         User savedAuthor = userRepository.saveAndFlush(author);
         UUID authorId = savedAuthor.getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
