@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn -B clean package -DskipTests
 
 # Étape 2 : exécution
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 
