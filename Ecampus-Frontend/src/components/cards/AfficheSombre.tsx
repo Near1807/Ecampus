@@ -21,7 +21,7 @@ export function AfficheSombre({ annonce, accent, density }: CardProps) {
       }}
     >
       <Pin color="gold" left={lg ? 34 : 22} />
-      <div style={{ flex: '1 1 auto', padding: lg ? '24px 26px 20px' : '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: lg ? 12 : 8 }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '24px 26px 20px' : '14px 14px 12px', display: 'flex', flexDirection: 'column', gap: lg ? 12 : 8 }}>
         <Tag fontSize={lg ? 11 : 10} padding={lg ? '4px 8px' : '2px 6px'} border="1px solid rgba(255,244,226,.7)" alignSelf="flex-start">
           {kickerOf(annonce, density)}
         </Tag>

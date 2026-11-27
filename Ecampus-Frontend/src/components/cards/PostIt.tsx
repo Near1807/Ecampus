@@ -20,7 +20,7 @@ export function PostIt({ annonce, density }: CardProps) {
       }}
     >
       <Tape center w={lg ? 80 : 68} h={lg ? 24 : 22} rotate={-3} top={lg ? -12 : -11} bg="rgba(246,238,214,.72)" />
-      <div style={{ flex: '1 1 auto', padding: lg ? '22px 18px 16px' : '16px 14px 12px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 6 }}>
+      <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '22px 18px 16px' : '16px 14px 12px', display: 'flex', flexDirection: 'column', gap: lg ? 10 : 6 }}>
         <Tag fontSize={lg ? 10.5 : 10} padding={lg ? '3px 7px' : '2px 6px'} border="1px solid #2B2410" alignSelf="flex-start">
           {kickerOf(annonce, density)}
         </Tag>

@@ -35,7 +35,7 @@ export function layoutDesktop(annonces: Annonce[], seed = 0): Slot[] {
     annonceId: p.item.id,
     col: span(p.col, p.cols),
     row: span(p.row, p.rows),
-    tilt: tiltFor(p.item.id),
+    tilt: tiltFor(p.item.id) / p.cols,
     density: 'lg',
     wide: p.cols >= 3,
   }))
@@ -81,7 +81,7 @@ function toMobileSlot(p: Placement<Annonce | null>): Slot {
     annonceId: a ? a.id : null,
     col: span(p.col, p.cols),
     row: span(p.row, p.rows),
-    tilt: a ? tiltFor(a.id) : 0,
+    tilt: a ? tiltFor(a.id) / p.cols : 0,
     density: p.cols >= 2 ? 'md' : 'sm',
     // version compacte de la carte « À la une » quand elle est basse
     variant: a && p.rows <= 2 && templateCodeOf(a) === 'AFFICHE_UNE' ? 'minimal' : undefined,

@@ -16,7 +16,11 @@ export interface Slot {
   wide?: boolean
 }
 
-/** Inclinaison stable (entre -2,6° et +2,6°) déduite de l'id : ne change pas d'un rendu à l'autre. */
+/**
+ * Inclinaison stable déduite de l'id : ne change pas d'un rendu à l'autre.
+ * Entre -2,6° et +2,6° pour une carte d'1 colonne ; on la divise ensuite par le nombre de colonnes
+ * (une carte large qui penche autant déborderait sur ses voisines).
+ */
 export function tiltFor(id: string): number {
   let h = 2166136261
   for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619)

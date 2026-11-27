@@ -9,7 +9,7 @@ export function Polaroid({ annonce, density }: CardProps) {
   return (
     <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto' }}>
       <Pin color="red" />
-      <article style={{ flex: '1 1 auto', padding: lg ? '10px 10px 14px' : '8px 8px 12px', display: 'flex', flexDirection: 'column', gap: 8, background: '#FBFAF6', color: '#2A241B', boxShadow: '0 2px 0 rgba(0,0,0,.08), 0 14px 20px -10px rgba(40,20,5,.5)' }}>
+      <article style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '10px 10px 14px' : '8px 8px 12px', display: 'flex', flexDirection: 'column', gap: 8, background: '#FBFAF6', color: '#2A241B', boxShadow: '0 2px 0 rgba(0,0,0,.08), 0 14px 20px -10px rgba(40,20,5,.5)' }}>
         {d.imageUrl && (
           <img
             src={d.imageUrl}

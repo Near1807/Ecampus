@@ -45,7 +45,7 @@ export function AfficheUne({ annonce, accent, density, variant }: CardProps) {
     return (
       <article style={{ ...root, boxShadow: '0 2px 0 rgba(0,0,0,.12), 0 14px 22px -10px rgba(40,18,4,.6)' }}>
         <Pin color="white" />
-        <div style={{ flex: '1 1 auto', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 4 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
             <Tag fontSize={10} padding="2px 6px" border="1px solid rgba(255,244,226,.7)">
               {kickerOf(annonce, 'md')}
@@ -82,7 +82,7 @@ export function AfficheUne({ annonce, accent, density, variant }: CardProps) {
         small={pick<[number, number]>(density, [34, 188], [22, 104])}
       />
       <Pin color="white" />
-      <div style={{ position: 'relative', flex: '1 1 auto', padding: lg ? '32px 34px' : '18px 20px', display: 'flex', flexDirection: 'column', gap: lg ? 16 : 10 }}>
+      <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, overflow: 'hidden', padding: lg ? '32px 34px' : '18px 20px', display: 'flex', flexDirection: 'column', gap: lg ? 16 : 10 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: lg ? 16 : 12 }}>
           <Tag fontSize={lg ? 11 : 10.5} padding={lg ? '4px 8px' : '3px 7px'} border="1px solid rgba(255,244,226,.7)">
             {kickerOf(annonce, density)}
