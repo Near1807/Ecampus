@@ -1,7 +1,34 @@
-export function Home() {
-    return (
-        <div>
-            <h1>Accueil</h1>
-        </div>
-    )
+import { useAnnonces } from '../hooks/useAnnonces'
+import { useIsMobile } from '../hooks/useIsMobile'
+import { BoardPage } from '../pages/BoardPage'
+import { MobileBoardPage } from '../pages/MobileBoardPage'
+import { CREAM, DEFAULT_ACCENT, MONO } from '../theme/tokens'
+import "./Board.css";
+
+/** Couleur d'accent et inclinaison des annonces (réglages du thème). */
+const ACCENT = DEFAULT_ACCENT
+const TILT = true
+/** Disposition du tableau : 0 = ordre de préférence par défaut ; essaie 1, 2, 3… pour d'autres arrangements. */
+const LAYOUT_SEED = 0
+
+function Message({ children }: { children: string }) {
+  return (
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#16110D', color: CREAM, fontFamily: MONO, fontSize: 14 }}>
+      {children}
+    </div>
+  )
+}
+
+export default function Home() {
+  const isMobile = useIsMobile(640)
+  const { annonces, loading, error } = useAnnonces()
+
+  if (loading) return <Message>Chargement du tableau…</Message>
+  if (error) return <Message>{`Impossible de charger les annonces (${error})`}</Message>
+
+  return isMobile ? (
+    <MobileBoardPage annonces={annonces} accent={ACCENT} tilt={TILT} seed={LAYOUT_SEED} />
+  ) : (
+    <BoardPage annonces={annonces} accent={ACCENT} tilt={TILT} seed={LAYOUT_SEED} />
+  )
 }

@@ -15,18 +15,20 @@ import be.ecampus.ecampusbackend.model.UserStatus;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    /** Le mail est unique sans distinction de casse (index sur lower(mail)). */
+    /** Find a user by email, ignoring case. */
     @Query("select u from User u where lower(u.mail) = lower(:mail)")
     Optional<User> findByMailIgnoreCase(@Param("mail") String mail);
 
+    /** Check whether an email already exists, ignoring case. */
     @Query("select count(u) > 0 from User u where lower(u.mail) = lower(:mail)")
     boolean existsByMailIgnoreCase(@Param("mail") String mail);
 
     boolean existsByRole(UserRole role);
 
     /**
-     * - Recherche paginée. role et status sont facultatifs (null = pas de filtre).
-     * - pattern est déjà en minuscules, échappé et entouré de '%' (au minimum "%").
+     * Paginated search.
+     * Role and status are optional (null means no filter).
+     * Pattern must be lowercase, escaped and surrounded by '%'.
      */
     @Query("""
             select u from User u
