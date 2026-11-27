@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+
 
 import be.ecampus.ecampusbackend.model.Annonce;
 import be.ecampus.ecampusbackend.service.AnnonceService;
@@ -50,5 +54,28 @@ public class AnnonceController {
     @DeleteMapping("/{id}")
     public void deleteAnnonce(@PathVariable UUID id) {
         annonceService.deleteAnnonce(id);
+    }
+
+    @GetMapping("/valide")
+    public List<Annonce> getAllValideAnnonces() {
+        return annonceService.getAllValideAnnonces();
+    }
+
+    @PatchMapping("/{id}/valider")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    public Annonce validerAnnonce(
+            @PathVariable UUID id,
+            Authentication authentication) {
+
+        return annonceService.validerAnnonce(id, authentication);
+    }
+
+    @PatchMapping("/{id}/decliner")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPERADMIN')")
+    public Annonce declinerAnnonce(
+            @PathVariable UUID id,
+            Authentication authentication) {
+
+        return annonceService.declinerAnnonce(id, authentication);
     }
 }
