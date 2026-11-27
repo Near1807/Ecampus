@@ -13,8 +13,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Regarde quels fichiers la PR (ou le push) modifie, pour ne lancer que les
+  # jobs concernés. Un job sauté compte comme réussi pour la protection de main.
+  changes:
+    name: Détecter les changements
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read # pour lister les fichiers modifiés d'une PR
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      docker: ${{ steps.filter.outputs.docker }}
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v6
+
+      - name: Lister les parties modifiées
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          # Modifier ci.yaml relance tout : on veut voir la nouvelle CI tourner.
+          filters: |
+            backend:
+              - 'Ecampus-Backend/**'
+              - 'supabase/migrations/**'
+              - '.github/workflows/ci.yaml'
+            frontend:
+              - 'Ecampus-Frontend/**'
+              - '.github/workflows/ci.yaml'
+            # Seulement ce qui définit les images. Le code lui-même est déjà
+            # compilé et testé par les jobs backend et frontend.
+            docker:
+              - '**/Dockerfile'
+              - '**/.dockerignore'
+              - 'Ecampus-Frontend/nginx.conf'
+              - 'docker-compose.yaml'
+              - '.github/workflows/ci.yaml'
+
   backend:
     name: Backend (tests Spring Boot)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -69,6 +109,8 @@ jobs:
 
   frontend:
     name: Frontend (lint + build)
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -97,7 +139,11 @@ jobs:
   docker:
     name: Images Docker
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [changes, backend, frontend]
+    # Par défaut, un job est sauté dès qu'un job dont il dépend a été sauté.
+    # !failure() && !cancelled() : on le lance tant que rien n'a échoué,
+    # même si backend ou frontend ont été sautés.
+    if: ${{ !failure() && !cancelled() && needs.changes.outputs.docker == 'true' }}
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v6
