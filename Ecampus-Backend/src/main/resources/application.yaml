@@ -2,20 +2,27 @@ spring:
   application:
     name: Ecampus-Backend
 <<<<<<< HEAD
+<<<<<<< HEAD
   jpa:
     hibernate:
       ddl-auto: validate
 
+=======
+>>>>>>> origin/main
 
   datasource:
     url: jdbc:postgresql://localhost:54322/postgres
     username: postgres
     password: postgres
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/main
 
   jpa :
     hibernate:
       ddl-auto: validate
+<<<<<<< HEAD
 
 # Premier superadmin, créé au démarrage s'il n'en existe aucun (voir SuperAdminBootstrap).
 ecampus:
@@ -26,3 +33,14 @@ ecampus:
       firstname: ${ECAMPUS_SUPERADMIN_FIRSTNAME:Super}
       lastname: ${ECAMPUS_SUPERADMIN_LASTNAME:Admin}
 >>>>>>> d766fb0 (feat : Backend Structure of our  project + Springboot security configuration + Idenfication de USERS)
+=======
+      
+  # Premier superadmin, créé au démarrage s'il n'en existe aucun (voir SuperAdminBootstrap).
+  ecampus:
+    bootstrap:
+      superadmin:
+        mail: ${ECAMPUS_SUPERADMIN_MAIL:}
+        password: ${ECAMPUS_SUPERADMIN_PASSWORD:}
+        firstname: ${ECAMPUS_SUPERADMIN_FIRSTNAME:Super}
+        lastname: ${ECAMPUS_SUPERADMIN_LASTNAME:Admin}
+>>>>>>> origin/main

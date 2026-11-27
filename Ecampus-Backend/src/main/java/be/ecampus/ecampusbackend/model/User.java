@@ -38,7 +38,8 @@ public class User {
     @Column(name = "mail", nullable = false, length = 255)
     private String mail;
 
-    /** Hash bcrypt/Argon2, jamais le mot de passe. */
+    // Hash computed by Spring Security, never the password itself.
+    // Never return it through the API or write it to logs.
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
@@ -56,7 +57,10 @@ public class User {
     @Column(name = "role", nullable = false, length = 20)
     private UserRole role = UserRole.USER;
 
-    /** Créateur du compte : NULL pour une inscription libre. */
+    /**
+     * Créateur du compte : NULL pour une inscription libre
+     * et pour le premier superadmin.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id", updatable = false)
     private User createdBy;
@@ -91,6 +95,8 @@ public class User {
     public boolean isActive() {
         return status == UserStatus.ACTIF;
     }
+
+    // Getters et setters
 
     public UUID getId() {
         return id;

@@ -1,7 +1,7 @@
 package be.ecampus.ecampusbackend.repository;
 
-import be.ecampus.ecampusbackend.model.Role;
 import be.ecampus.ecampusbackend.model.User;
+import be.ecampus.ecampusbackend.model.UserRole;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests of {@link UserRepository} against the real local PostgreSQL.
@@ -38,7 +37,11 @@ class UserRepositoryTest
     @Test
     void savesAndReadsBackAUser() {
         // Arrange
-        User user = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
 
         // Act
         User saved = userRepository.saveAndFlush(user);
@@ -57,15 +60,23 @@ class UserRepositoryTest
         assertEquals("Lovelace", found.getLastname());
         assertEquals("ada@example.com", found.getMail());
         assertEquals("hash", found.getPasswordHash());
-        assertEquals(Role.USER, found.getRole());
+        assertEquals(UserRole.USER, found.getRole());
     }
 
     @Test
     void rejectsTheSameMailIgnoringCase() {
         // Arrange
-        User first = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User first = new User();
+        first.setFirstname("Ada");
+        first.setLastname("Lovelace");
+        first.setMail("ada@example.com");
+        first.setPasswordHash("hash");
         userRepository.saveAndFlush(first);
-        User duplicate = new User("Ada", "Clone", "Ada@Example.com", "hash");
+        User duplicate = new User();
+        duplicate.setFirstname("Ada");
+        duplicate.setLastname("Clone");
+        duplicate.setMail("Ada@Example.com");
+        duplicate.setPasswordHash("hash");
 
         // Act
         boolean exceptionWasThrown = false;
@@ -83,5 +94,19 @@ class UserRepositoryTest
         // from another rule than the unique index on lower(mail).
         assertTrue(errorMessage.contains("uq_users_mail_lower"),
                 "The refusal should come from uq_users_mail_lower");
+    }
+
+    @Test
+    void findsAUserIgnoringTheCaseOfTheMail() {
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
+        userRepository.saveAndFlush(user);
+        Optional<User> result = userRepository.findByMailIgnoreCase("ADA@EXAMPLE.COM");
+        assertTrue(result.isPresent(), "The user should be found");
+        User found = result.get();
+        assertEquals(user.getId(), found.getId());
     }
 }

@@ -34,7 +34,11 @@ public class ImageRepositoryTest {
     @Test
     void savesAndReadsBackAnImage() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         UUID authorId = userRepository.saveAndFlush(author).getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
         UUID annonceId = annonceRepository.saveAndFlush(annonce).getId();
@@ -72,7 +76,11 @@ public class ImageRepositoryTest {
     @Test
     void rejectsTwoImagesWithTheSameStoragePath() {
         // Arrange
-        User author = new User("Ada", "Lovelace", "ada@example.com", "hash");
+        User author = new User();
+        author.setFirstname("Ada");
+        author.setLastname("Lovelace");
+        author.setMail("ada@example.com");
+        author.setPasswordHash("hash");
         UUID authorId = userRepository.saveAndFlush(author).getId();
         Annonce annonce = new Annonce(authorId, Categorie.EVENEMENT, "Title", "Content");
         UUID annonceId = annonceRepository.saveAndFlush(annonce).getId();
