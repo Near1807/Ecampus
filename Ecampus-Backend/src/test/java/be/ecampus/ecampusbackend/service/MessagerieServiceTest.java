@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,13 +49,9 @@ class MessagerieServiceTest {
         adminId = UUID.randomUUID();
         annonceId = UUID.randomUUID();
 
-        admin = new User();
-        admin.setFirstname("Alice");
-        admin.setLastname("Admin");
-        admin.setMail("admin@ecam.be");
-        admin.setPasswordHash("hash");
-        admin.setRole(UserRole.ADMIN);
+        admin = UserTestFactory.createUser("Alice", "Admin", "admin@ecam.be");
         ReflectionTestUtils.setField(admin, "id", adminId);
+        ReflectionTestUtils.setField(admin, "role", UserRole.ADMIN);
 
         annonce = new Annonce(auteurId, Categorie.values()[0], "Titre test", "Description test");
         ReflectionTestUtils.setField(annonce, "id", annonceId);
@@ -86,8 +83,30 @@ class MessagerieServiceTest {
     }
 
     @Test
+    void ouvrirConversation_ReutiliseConversationExistanteSansDoublon() {
+        Conversation convExistante = new Conversation(auteurId, adminId);
+        UUID convId = UUID.randomUUID();
+        ReflectionTestUtils.setField(convExistante, "id", convId);
+
+        when(annonceRepository.findById(annonceId)).thenReturn(Optional.of(annonce));
+        when(userRepository.findById(adminId)).thenReturn(Optional.of(admin));
+        when(conversationRepository.findByUserIdAndAdminId(auteurId, adminId))
+                .thenReturn(Optional.of(convExistante));
+        when(conversationRepository.existsById(convId)).thenReturn(true);
+        when(userRepository.existsById(adminId)).thenReturn(true);
+
+        Conversation resultat = messagerieService.ouvrirConversationPourAnnonce(
+                annonceId, adminId, "Autre problème signalé sur une annonce."
+        );
+
+        assertEquals(convId, resultat.getId());
+        verify(conversationRepository, never()).save(any(Conversation.class));
+        verify(messageRepository).save(any(Message.class));
+    }
+
+    @Test
     void ouvrirConversation_RefuseSiNonAdmin() {
-        admin.setRole(UserRole.USER);
+        ReflectionTestUtils.setField(admin, "role", UserRole.USER);
 
         when(annonceRepository.findById(annonceId)).thenReturn(Optional.of(annonce));
         when(userRepository.findById(adminId)).thenReturn(Optional.of(admin));
@@ -137,30 +156,5 @@ class MessagerieServiceTest {
         assertNotNull(msgAdmin.getReadAt());
         assertNull(msgEtudiant.getReadAt());
         verify(messageRepository).saveAll(anyList());
-    }
-
-    @Test
-    void ouvrirConversation_ReutiliseConversationExistanteSansDoublon() {
-        // 1. Préparation : une conversation existe déjà entre l'étudiant et cet admin
-        Conversation convExistante = new Conversation(auteurId, adminId);
-        UUID convId = UUID.randomUUID();
-        ReflectionTestUtils.setField(convExistante, "id", convId);
-
-        when(annonceRepository.findById(annonceId)).thenReturn(Optional.of(annonce));
-        when(userRepository.findById(adminId)).thenReturn(Optional.of(admin));
-        when(conversationRepository.findByUserIdAndAdminId(auteurId, adminId))
-                .thenReturn(Optional.of(convExistante));
-        when(conversationRepository.existsById(convId)).thenReturn(true);
-        when(userRepository.existsById(adminId)).thenReturn(true);
-
-        // 2. Exécution
-        Conversation resultat = messagerieService.ouvrirConversationPourAnnonce(
-                annonceId, adminId, "Autre problème signalé sur une annonce."
-        );
-
-        // 3. Vérifications
-        assertEquals(convId, resultat.getId());
-        verify(conversationRepository, never()).save(any(Conversation.class)); // Aucune nouvelle conversation créée
-        verify(messageRepository).save(any(Message.class)); // Le nouveau message est bien ajouté
     }
 }

@@ -2,8 +2,6 @@ package be.ecampus.ecampusbackend.repository;
 
 import be.ecampus.ecampusbackend.model.Conversation;
 import be.ecampus.ecampusbackend.model.User;
-import be.ecampus.ecampusbackend.repository.ConversationRepository;
-import be.ecampus.ecampusbackend.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,28 +28,24 @@ public class ConversationRepositoryTest {
 
     @Test
     void savesAndReadsBackAConversation() {
-        // Arrange
-        User user = new User();
-        user.setFirstname("Ada");
-        user.setLastname("Lovelace");
-        user.setMail("ada@example.com");
-        user.setPasswordHash("hash");
+        User user = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
+
+        User admin = UserTestFactory.createUser(
+                "Grace", "Hopper", "grace@example.com");
+
         UUID userId = userRepository.saveAndFlush(user).getId();
-        User admin = new User();
-        admin.setFirstname("Grace");
-        admin.setLastname("Hopper");
-        admin.setMail("grace@example.com");
-        admin.setPasswordHash("hash");
         UUID adminId = userRepository.saveAndFlush(admin).getId();
+
         Conversation conversation = new Conversation(userId, adminId);
 
-        // Act
         Conversation saved = conversationRepository.saveAndFlush(conversation);
         UUID id = saved.getId();
-        entityManager.clear();
-        Conversation found = conversationRepository.findById(id).get();
 
-        // Assert
+        entityManager.clear();
+
+        Conversation found = conversationRepository.findById(id).orElseThrow();
+
         assertEquals(userId, found.getUserId());
         assertEquals(adminId, found.getAdminId());
         assertNotNull(found.getCreatedAt());
@@ -59,64 +53,55 @@ public class ConversationRepositoryTest {
 
     @Test
     void rejectsAConversationWithTheSameUserAndAdmin() {
-        // Arrange
-        User user = new User();
-        user.setFirstname("Ada");
-        user.setLastname("Lovelace");
-        user.setMail("ada@example.com");
-        user.setPasswordHash("hash");
+        User user = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
+
         UUID userId = userRepository.saveAndFlush(user).getId();
         Conversation conversation = new Conversation(userId, userId);
 
-        // Act
         String errorMessage = "";
+
         try {
             conversationRepository.saveAndFlush(conversation);
         } catch (DataIntegrityViolationException exception) {
             errorMessage = exception.getMostSpecificCause().getMessage();
         }
 
-        // Assert
-        assertTrue(errorMessage.contains("chk_conversations_distinct_participants"));
+        assertNotNull(errorMessage);
+        assertTrue(errorMessage.contains(
+                "chk_conversations_distinct_participants"));
     }
 
     @Test
     void rejectsAConversationWithAnUnknownUser() {
-        // Arrange
-        User admin = new User();
-        admin.setFirstname("Grace");
-        admin.setLastname("Hopper");
-        admin.setMail("grace@example.com");
-        admin.setPasswordHash("hash");
-        UUID adminId = userRepository.saveAndFlush(admin).getId();
-        Conversation conversation = new Conversation(UUID.randomUUID(), adminId);
+        User admin = UserTestFactory.createUser(
+                "Grace", "Hopper", "grace@example.com");
 
-        // Act
+        UUID adminId = userRepository.saveAndFlush(admin).getId();
+
+        Conversation conversation =
+                new Conversation(UUID.randomUUID(), adminId);
+
         String errorMessage = "";
+
         try {
             conversationRepository.saveAndFlush(conversation);
         } catch (DataIntegrityViolationException exception) {
             errorMessage = exception.getMostSpecificCause().getMessage();
         }
 
-        // Assert
+        assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("fk_conversations_user"));
     }
 
     @Test
     void findsAConversationByUserIdAndAdminId() {
-        User user = new User();
-        user.setFirstname("Ada");
-        user.setLastname("Lovelace");
-        user.setMail("ada@example.com");
-        user.setPasswordHash("hash");
-        UUID userId = userRepository.saveAndFlush(user).getId();
+        User user = UserTestFactory.createUser(
+                "Ada", "Lovelace", "ada@example.com");
+        User admin = UserTestFactory.createUser(
+                "Grace", "Hopper", "grace@example.com");
 
-        User admin = new User();
-        admin.setFirstname("Grace");
-        admin.setLastname("Hopper");
-        admin.setMail("grace@example.com");
-        admin.setPasswordHash("hash");
+        UUID userId = userRepository.saveAndFlush(user).getId();
         UUID adminId = userRepository.saveAndFlush(admin).getId();
 
         Conversation saved = conversationRepository.saveAndFlush(new Conversation(userId, adminId));
