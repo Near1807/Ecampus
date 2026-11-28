@@ -116,4 +116,35 @@ public class MessageRepositoryTest {
         assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("chk_messages_dates"));
     }
+
+    @Test
+    void findsMessagesByConversationIdOrderedByCreatedAtAsc() {
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
+        UUID userId = userRepository.saveAndFlush(user).getId();
+
+        User admin = new User();
+        admin.setFirstname("Grace");
+        admin.setLastname("Hopper");
+        admin.setMail("grace@example.com");
+        admin.setPasswordHash("hash");
+        UUID adminId = userRepository.saveAndFlush(admin).getId();
+
+        UUID conversationId = conversationRepository
+                .saveAndFlush(new Conversation(userId, adminId))
+                .getId();
+
+        messageRepository.saveAndFlush(new Message(conversationId, adminId, "Premier message"));
+        messageRepository.saveAndFlush(new Message(conversationId, userId, "Deuxième message"));
+        entityManager.clear();
+
+        var messages = messageRepository.findByConversationIdOrderByCreatedAtAsc(conversationId);
+
+        assertEquals(2, messages.size());
+        assertEquals("Premier message", messages.get(0).getContent());
+        assertEquals("Deuxième message", messages.get(1).getContent());
+    }
 }

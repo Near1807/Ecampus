@@ -32,6 +32,7 @@ public class SecurityConfig {
     /** Routes accessibles sans authentification. */
     private static final String[] PUBLIC_ROUTES = {
             "/api/health",
+            "/api/messagerie/**",
             "/error",
             "/api/boost"
     };

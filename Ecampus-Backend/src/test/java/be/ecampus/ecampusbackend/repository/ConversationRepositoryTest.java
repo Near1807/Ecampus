@@ -93,4 +93,29 @@ public class ConversationRepositoryTest {
         assertNotNull(errorMessage);
         assertTrue(errorMessage.contains("fk_conversations_user"));
     }
+
+    @Test
+    void findsAConversationByUserIdAndAdminId() {
+        User user = new User();
+        user.setFirstname("Ada");
+        user.setLastname("Lovelace");
+        user.setMail("ada@example.com");
+        user.setPasswordHash("hash");
+        UUID userId = userRepository.saveAndFlush(user).getId();
+
+        User admin = new User();
+        admin.setFirstname("Grace");
+        admin.setLastname("Hopper");
+        admin.setMail("grace@example.com");
+        admin.setPasswordHash("hash");
+        UUID adminId = userRepository.saveAndFlush(admin).getId();
+
+        Conversation saved = conversationRepository.saveAndFlush(new Conversation(userId, adminId));
+        entityManager.clear();
+
+        var found = conversationRepository.findByUserIdAndAdminId(userId, adminId);
+
+        assertTrue(found.isPresent());
+        assertEquals(saved.getId(), found.get().getId());
+    }
 }
